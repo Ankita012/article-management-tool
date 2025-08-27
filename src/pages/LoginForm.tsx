@@ -55,6 +55,7 @@ const LoginForm: React.FC = () => {
                 autoComplete="email"
                 placeholder="Enter your email"
                 className="py-3 px-4"
+                autoFocus={true}
               />
               
               <Input

@@ -13,8 +13,6 @@ const Input: React.FC<InputProps> = ({
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`
   const [showPassword, setShowPassword] = useState(false)
 
-  // Destructure `type` out so spreading the remaining props doesn't overwrite
-  // the computed `type` attribute we set to toggle show/hide password.
   const { type, ...rest } = props
   const isPassword = type === 'password'
 
@@ -48,6 +46,7 @@ const Input: React.FC<InputProps> = ({
             error ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
           }
           {...rest}
+          autoFocus={props.autoFocus}
         />
 
         {isPassword && (

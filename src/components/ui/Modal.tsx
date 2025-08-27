@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import type { ModalProps } from '../../types'
-import Button from './Button'
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -15,19 +14,11 @@ const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      // Store the previously focused element
       previousFocusRef.current = document.activeElement as HTMLElement
-      
-      // Focus the modal
       modalRef.current?.focus()
-      
-      // Prevent body scroll
       document.body.style.overflow = 'hidden'
     } else {
-      // Restore body scroll
       document.body.style.overflow = 'unset'
-      
-      // Restore focus to previously focused element
       if (previousFocusRef.current) {
         previousFocusRef.current.focus()
       }
@@ -88,15 +79,21 @@ const Modal: React.FC<ModalProps> = ({
           tabIndex={-1}
         >
           <div className="absolute right-0 top-0 pr-4 pt-4">
-            <Button
-              variant="ghost"
-              size="sm"
+            <div
               onClick={onClose}
               aria-label="Close modal"
-              className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 p-2"
+              className="p-2 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onClose();
+                }
+              }}
             >
               <X className="h-5 w-5" />
-            </Button>
+            </div>
           </div>
           
           {title && (

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ArticleStatus } from '../types'
 import type { Article } from '../types'
 import { Button } from './ui'
@@ -20,16 +20,17 @@ interface ArticleFormProps {
 }
 
 interface FormFieldProps {
-  label: string
-  name: string
-  value: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void
-  error?: string
-  placeholder: string
-  type?: 'text' | 'textarea' | 'select'
-  rows?: number
-  options?: { value: string; label: string }[]
-  className?: string
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  error?: string;
+  placeholder: string;
+  type?: 'text' | 'textarea' | 'select';
+  rows?: number;
+  options?: { value: string; label: string }[];
+  className?: string;
+  inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>; // Add inputRef to props
 }
 
 const FormField: React.FC<FormFieldProps> = ({
@@ -42,11 +43,12 @@ const FormField: React.FC<FormFieldProps> = ({
   type = 'text',
   rows = 3,
   options = [],
-  className = ''
+  className = '',
+  inputRef
 }) => {
-  const baseInputClasses = "w-full rounded-lg border shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 py-3 px-4 transition-all duration-200"
-  const errorBorderClass = error ? 'border-red-500' : 'border-gray-300'
-  const inputClasses = `${baseInputClasses} ${errorBorderClass}`
+  const baseInputClasses = "w-full rounded-lg border shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 py-3 px-4 transition-all duration-200";
+  const errorBorderClass = error ? 'border-red-500' : 'border-gray-300';
+  const inputClasses = `${baseInputClasses} ${errorBorderClass}`;
 
   return (
     <div className={className}>
@@ -63,6 +65,7 @@ const FormField: React.FC<FormFieldProps> = ({
           rows={rows}
           className={inputClasses}
           placeholder={placeholder}
+          ref={inputRef as React.Ref<HTMLTextAreaElement>} // Apply ref specifically to textarea
         />
       ) : type === 'select' ? (
         <select
@@ -87,6 +90,7 @@ const FormField: React.FC<FormFieldProps> = ({
           onChange={onChange}
           className={inputClasses}
           placeholder={placeholder}
+          ref={inputRef as React.Ref<HTMLInputElement>} // Apply ref specifically to input
         />
       )}
       
@@ -126,11 +130,6 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
     if (!articleForm.content.trim()) {
       errors.content = 'Content is required';
     }
-
-    // Removed character length validations for title, content, and summary
-    // if (articleForm.summary !== undefined && articleForm.summary.trim().length > 10) {
-    //   errors.summary = 'Summary must be less than 10 characters long';
-    // }
     
     const isValid = Object.keys(errors).length === 0;
     if (onValidation) {
@@ -146,6 +145,14 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
     }
   };
 
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (titleInputRef.current) {
+      titleInputRef.current.focus();
+    }
+  }, [editingArticle]); // Refocus when editingArticle changes (modal opens/switches)
+
   return (
     <form onSubmit={handleSubmit} aria-label="article form">
       <div className="space-y-4">
@@ -156,6 +163,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
           onChange={onFormChange}
           error={formErrors.title}
           placeholder="Enter article title"
+          inputRef={titleInputRef} // Pass the ref to the FormField
         />
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

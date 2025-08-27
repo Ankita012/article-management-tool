@@ -41,6 +41,7 @@ const Header: React.FC = () => {
                   toggleTheme()
                 }
               }}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
                 <Moon className="h-5 w-5" />
@@ -61,6 +62,7 @@ const Header: React.FC = () => {
                   logout()
                 }
               }}
+              title="Sign out"
             >
               <LogOut className="h-5 w-5" />
             </div>

@@ -85,9 +85,12 @@ describe('Dashboard (Integration)', () => {
     renderDashboard()
     const user = userEvent.setup()
     await screen.findByText('First Article')
-    // Use role if possible (combobox/select)
-    const statusDrop = screen.getByLabelText('Status');
-    await user.selectOptions(statusDrop, ArticleStatus.PUBLISHED)
+   
+    const statusDropTrigger = within(screen.getByTestId('status-filter-wrapper')).getByTitle('Filter by status');
+    await user.click(statusDropTrigger);
+
+    const publishedOption = screen.getByRole('button', { name: ArticleStatus.PUBLISHED });
+    await user.click(publishedOption);
     await waitFor(() => {
       expect(articleService.getArticles).toHaveBeenCalledWith(
         1,

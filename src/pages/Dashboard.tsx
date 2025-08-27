@@ -16,7 +16,7 @@ import Header from '../components/Header'
 const Dashboard: React.FC = () => {
   const { user } = useAuth()
   const [articles, setArticles] = useState<Article[]>([])
-  const [loading, setLoading] = useState(false) // Start with false to avoid initial skeleton loaders
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState<PaginationParams>({
     page: 1,
@@ -182,7 +182,6 @@ const Dashboard: React.FC = () => {
       closeModals()
       setSuccessMessage(`Article successfully ${editingArticle ? 'updated' : 'created'}!`);
       setTimeout(() => setSuccessMessage(''), 3000);
-      // No need to fetch articles again, we've updated the local state directly
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save article')
     } finally {
@@ -197,7 +196,6 @@ const Dashboard: React.FC = () => {
         try {
           await deleteArticle(id)
           setArticles(prev => prev.filter(article => article.id !== id))
-          // Update pagination if we're on the last page and it becomes empty
           if (articles.length === 1 && pagination.page > 1) {
             setPagination(prev => ({ ...prev, page: prev.page - 1 }))
           }
@@ -269,7 +267,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="card p-6 mt-6">
+        <div className="mt-6">
           <Pagination
             pagination={pagination}
             loading={loading}

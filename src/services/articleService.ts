@@ -126,7 +126,7 @@ export const getArticles = async (
   pageSize: number = 10,
   filters: Partial<ArticleFilters> = {}
 ): Promise<PaginatedResponse<Article>> => {
-  await delay(200) // fixed delay
+  await delay(200)
 
   const defaultFilters: ArticleFilters = {
     search: '',

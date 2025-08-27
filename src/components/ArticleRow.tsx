@@ -16,12 +16,14 @@ interface ActionIconProps {
   onClick: () => void
   ariaLabel: string
   className?: string
+  title?: string
 }
 
-const ActionIcon: React.FC<ActionIconProps> = ({ icon: Icon, onClick, ariaLabel, className = "" }) => (
+const ActionIcon: React.FC<ActionIconProps> = ({ icon: Icon, onClick, ariaLabel, className = "", title = "" }) => (
   <button
     onClick={onClick}
     aria-label={ariaLabel}
+    title={title || ariaLabel}
     className={`p-2 transition-all duration-200 hover:scale-105 ${className}`}
   >
     <Icon className="h-4 w-4" />
@@ -98,6 +100,7 @@ const ArticleRow: React.FC<ArticleRowProps> = ({
             onClick={() => onView(article)}
             ariaLabel="View article"
             className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+            title="View article"
           />
           {canEdit && (
             <>
@@ -106,12 +109,14 @@ const ArticleRow: React.FC<ArticleRowProps> = ({
                 onClick={() => onEdit(article)}
                 ariaLabel="Edit article"
                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                title="Edit article"
               />
               <ActionIcon
                 icon={Trash2}
                 onClick={() => onDelete(article.id)}
                 ariaLabel="Delete article"
                 className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+                title='Delete article'
               />
             </>
           )}
