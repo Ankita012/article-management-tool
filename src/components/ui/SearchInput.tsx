@@ -20,7 +20,6 @@ const SearchInput: React.FC<SearchInputProps> = ({
         onChange(localValue)
       }
     }, debounceMs)
-
     return () => clearTimeout(timer)
   }, [localValue, value, onChange, debounceMs])
 

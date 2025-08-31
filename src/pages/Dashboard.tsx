@@ -68,6 +68,7 @@ const Dashboard: React.FC = () => {
         getArticles(pagination.page, pagination.pageSize, filters),
         minimumDisplayTime
       ]);
+      console.log('Fetched articles:', response);
       setArticles(response.data);
       setPagination(response.pagination);
     } catch (err) {
@@ -79,6 +80,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchArticles()
+    console.log('Filters changed:', filters)
   }, [pagination.page, pagination.pageSize, filters])
 
   const handleSearchChange = (search: string) => {
@@ -165,8 +167,6 @@ const Dashboard: React.FC = () => {
   }
   const handleSaveArticle = async (e: React.FormEvent) => {
     e.preventDefault()
-
-
     setIsSubmitting(true)
     setFormErrors({})
 

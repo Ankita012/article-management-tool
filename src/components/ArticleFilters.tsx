@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Filter, Plus, Search } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Filter, Plus } from 'lucide-react';
 import { ArrowDownUp } from 'lucide-react';
 import { ArticleStatus } from '../types';
 import type { ArticleFilters as ArticleFiltersType } from '../types';
@@ -25,6 +25,27 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
 
+  const statusOptions = useMemo(
+    () => ([
+      { value: '', label: 'All Status' },
+      { value: ArticleStatus.PUBLISHED, label: 'Published' },
+      { value: ArticleStatus.DRAFT, label: 'Draft' },
+    ]),
+    []
+  );
+
+  const sortOptions = useMemo(
+    () => ([
+      { label: 'Newest First', sortBy: 'createdAt', sortOrder: 'desc' as const },
+      { label: 'Oldest First', sortBy: 'createdAt', sortOrder: 'asc' as const },
+      { label: 'Title A-Z',   sortBy: 'title',     sortOrder: 'asc' as const },
+      { label: 'Author A-Z',  sortBy: 'author',    sortOrder: 'asc' as const },
+    ]),
+    []
+  );
+
+  const triggerButtonClass = "rounded-lg py-3 font-medium w-full sm:w-40";
+
   const handleStatusSelect = (value: string) => {
     onStatusFilter(value ? [value as ArticleStatus] : []);
     setIsStatusDropdownOpen(false); // Close dropdown after selection
@@ -40,35 +61,28 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
       <div className="flex flex-col sm:flex-row gap-4 flex-1">
         {/* Search */}
         <div className="flex-1 max-w-md">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-40" />
-            </div>
-            <SearchInput
-              value={filters.search}
-              onChange={onSearchChange}
-              placeholder="Search articles..."
-            />
-          </div>
+          <SearchInput
+            value={filters.search}
+            onChange={onSearchChange}
+            placeholder="Search articles..."
+            debounceMs={300}
+          />
         </div>
 
         {/* Status Filter */}
-        <div className="w-full sm:w-48" data-testid="status-filter-wrapper">
+        <div className="w-full sm:w-40" data-testid="status-filter-wrapper">
           <Dropdown
             isOpen={isStatusDropdownOpen}
             onOpenChange={setIsStatusDropdownOpen}
             trigger={
-              <Button variant="secondary" size="md" className="rounded-lg py-3 font-medium w-full sm:w-40" title='Filter by status'>
-                <Filter className="h-4 w-4 mr-2 " />
+              <Button variant="secondary" size="md" className={triggerButtonClass} title='Filter by status'>
+                <Filter className="h-4 w-4 mr-2" />
                 {filters.status.length === 1 ? filters.status[0] : 'Filter by status'}
               </Button>
             }
           >
             <div className="py-1">
-              {[{ value: '', label: 'All Status' },
-                { value: ArticleStatus.PUBLISHED, label: 'Published' },
-                { value: ArticleStatus.DRAFT, label: 'Draft' },
-              ].map((option) => (
+              {statusOptions.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleStatusSelect(option.value)}
@@ -81,43 +95,30 @@ const ArticleFilters: React.FC<ArticleFiltersProps> = ({
           </Dropdown>
         </div>
 
-        <Dropdown
-          isOpen={isSortDropdownOpen}
-          onOpenChange={setIsSortDropdownOpen}
-          trigger={
-            <Button variant="secondary" size="md" className="rounded-lg py-3 font-medium w-full sm:w-36" title='Sort articles'>
-              <ArrowDownUp className="h-4 w-4 mr-2" />
-              Sort
-            </Button>
-          }
-        >
-          <div className="py-1">
-            <button
-              onClick={() => handleSortSelect('createdAt', 'desc')}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-100 w-full text-left dark:text-gray-300 dark:hover:bg-primary-900/30 focus:outline-none focus:bg-primary-10 dark:focus:bg-primary-900/30"
-            >
-              Newest First
-            </button>
-            <button
-              onClick={() => handleSortSelect('createdAt', 'asc')}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-100 w-full text-left dark:text-gray-300 dark:hover:bg-primary-900/30 focus:outline-none focus:bg-primary-10 dark:focus:bg-primary-900/30"
-            >
-              Oldest First
-            </button>
-            <button
-              onClick={() => handleSortSelect('title', 'asc')}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-100 w-full text-left dark:text-gray-300 dark:hover:bg-primary-900/30 focus:outline-none focus:bg-primary-10 dark:focus:bg-primary-900/30"
-            >
-              Title A-Z
-            </button>
-            <button
-              onClick={() => handleSortSelect('author', 'asc')}
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-100 w-full text-left dark:text-gray-300 dark:hover:bg-primary-900/30 focus:outline-none focus:bg-primary-10 dark:focus:bg-primary-900/30"
-            >
-              Author A-Z
-            </button>
-          </div>
-        </Dropdown>
+        <div className="w-full sm:w-40">
+          <Dropdown
+            isOpen={isSortDropdownOpen}
+            onOpenChange={setIsSortDropdownOpen}
+            trigger={
+              <Button variant="secondary" size="md" className={triggerButtonClass} title='Sort articles'>
+                <ArrowDownUp className="h-4 w-4 mr-2" />
+                Sort
+              </Button>
+            }
+          >
+            <div className="py-1">
+              {sortOptions.map((opt) => (
+                <button
+                  key={`${opt.sortBy}-${opt.sortOrder}`}
+                  onClick={() => handleSortSelect(opt.sortBy, opt.sortOrder)}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-100 w-full text-left dark:text-gray-300 dark:hover:bg-primary-900/30 focus:outline-none focus:bg-primary-10 dark:focus:bg-primary-900/30"
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </Dropdown>
+        </div>
       </div>
 
       {/* Add Article Button */}

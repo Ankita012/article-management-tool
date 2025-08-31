@@ -55,7 +55,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   }
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative sm:inline-block text-left">
       <div>
         <div
           ref={triggerRef as any}
