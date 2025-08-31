@@ -5,7 +5,7 @@ import { ArticleStatus } from '../types';
 import { useState } from 'react';
 
 // Helper to render form with base props
-const TestArticleForm = (overrideProps: any = {}) => {
+const TestArticleForm = (overrideProps: Partial<Parameters<typeof ArticleForm>[0]> = {}) => {
   const [articleForm, setArticleForm] = useState({
     title: '',
     status: ArticleStatus.DRAFT,
@@ -14,7 +14,7 @@ const TestArticleForm = (overrideProps: any = {}) => {
     summary: '',
     ...overrideProps.articleForm,
   });
-  const [formErrors, setFormErrors] = useState({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const baseProps = {
     formErrors,
@@ -25,7 +25,7 @@ const TestArticleForm = (overrideProps: any = {}) => {
     articleForm,
     onFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      setArticleForm((prev: any) => ({ ...prev, [name]: value }));
+      setArticleForm(prev => ({ ...prev, [name]: value }));
       if (overrideProps.onFormChange) {
         overrideProps.onFormChange(e);
       }

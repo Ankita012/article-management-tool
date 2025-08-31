@@ -57,10 +57,9 @@ const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div className="relative sm:inline-block text-left">
       <div>
-        <div
-          ref={triggerRef as any}
-          role="button"
-          tabIndex={0}
+        <button
+          ref={triggerRef}
+          type="button"
           onClick={toggleDropdown}
           onKeyDown={(e: React.KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -73,7 +72,7 @@ const Dropdown: React.FC<DropdownProps> = ({
           aria-haspopup="true"
         >
           {trigger}
-        </div>
+        </button>
       </div>
 
       {isOpen && (

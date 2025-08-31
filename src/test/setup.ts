@@ -2,21 +2,23 @@ import '@testing-library/jest-dom'
 import { vi } from 'vitest'
 
 // Mock IntersectionObserver
-(globalThis as any).IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  
-  observe() {
-    return null
-  }
-  
-  disconnect() {
-    return null
-  }
-  
-  unobserve() {
-    return null
-  }
+class MockIntersectionObserver implements IntersectionObserver {
+  readonly root: Element | Document | null = null
+  readonly rootMargin: string = ''
+  readonly thresholds: ReadonlyArray<number> = []
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(_callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] { return [] }
 }
+
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: MockIntersectionObserver
+})
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -46,11 +48,11 @@ Object.defineProperty(window, 'localStorage', {
 
 // Mock HTMLFormElement.prototype.requestSubmit for JSDOM
 if (!HTMLFormElement.prototype.requestSubmit) {
-  HTMLFormElement.prototype.requestSubmit = function(submitter?: HTMLElement) {
-    if (submitter && (submitter as any).form !== this) {
+  HTMLFormElement.prototype.requestSubmit = function (submitter?: HTMLButtonElement | HTMLInputElement) {
+    if (submitter && submitter.form !== this) {
       throw new DOMException("Form does not contain submitter", "InvalidStateError")
     }
-    
+
     const submitEvent = new Event('submit', { bubbles: true, cancelable: true })
     this.dispatchEvent(submitEvent)
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Grid, List, BarChart3 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { UserRole, ArticleStatus } from '../types'
@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
  })
 
   // Fetch articles
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
     setError(null);
     const minimumDisplayTime = new Promise(resolve => setTimeout(resolve, 300)); // 300ms minimum
@@ -76,12 +76,11 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.pageSize, filters]);
 
   useEffect(() => {
     fetchArticles()
-    console.log('Filters changed:', filters)
-  }, [pagination.page, pagination.pageSize, filters])
+  }, [fetchArticles])
 
   const handleSearchChange = (search: string) => {
     setFilters((prev: ArticleFiltersType) => ({ ...prev, search }))
@@ -93,8 +92,13 @@ const Dashboard: React.FC = () => {
     setPagination(prev => ({ ...prev, page: 1 }))
   }
 
+  const sortKeys = ['title', 'createdAt', 'updatedAt', 'author'] as const
+  type SortKey = typeof sortKeys[number]
+
   const handleSortChange = (sortBy: string, sortOrder: 'asc' | 'desc') => {
-    setFilters((prev: ArticleFiltersType) => ({ ...prev, sortBy: sortBy as any, sortOrder }))
+    if ((sortKeys as readonly string[]).includes(sortBy)) {
+      setFilters((prev: ArticleFiltersType) => ({ ...prev, sortBy: sortBy as SortKey, sortOrder }))
+    }
   }
   
   // Form/modal helpers (restored)

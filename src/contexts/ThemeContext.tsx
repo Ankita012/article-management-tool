@@ -3,6 +3,7 @@ import type { ThemeContextType } from '../types'
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
   const context = useContext(ThemeContext)
   if (context === undefined) {
@@ -36,26 +37,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light')
   }
 
+   
+   
   useEffect(() => {
-    const root = document.documentElement
     const body = document.body
-    
     body.classList.add('preload')
-    
-    if (theme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('theme', theme)
-    
+
     const enableTransitionsTimer = setTimeout(() => {
       body.classList.remove('preload')
       setIsInitialized(true)
     }, 100)
-    
+
     return () => clearTimeout(enableTransitionsTimer)
   }, [])
 
