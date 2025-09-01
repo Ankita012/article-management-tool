@@ -11,6 +11,8 @@ interface ArticleTableProps {
   onView: (article: Article) => void
   onEdit: (article: Article) => void
   onDelete: (id: number) => void
+  showStatus?: boolean
+  onAddArticle?: () => void
 }
 
 const ArticleTable: React.FC<ArticleTableProps> = ({
@@ -21,7 +23,9 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
   pageSize,
   onView,
   onEdit,
-  onDelete
+  onDelete,
+  showStatus = true,
+  onAddArticle
 }) => {
 
   // Common base class for all table headers
@@ -36,7 +40,7 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
           <thead className="bg-primary-50 dark:bg-primary-900/20">
             <tr>
               <th className={headerClass}>Title</th>
-              <th className={headerClass}>Status</th>
+              {showStatus && <th className={headerClass}>Status</th>}
               <th className={headerClass}>Author</th>
               <th className={headerClass}>Date</th>
               <th className={headerClassRight}>Actions</th>
@@ -115,9 +119,7 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                     <div className="mt-6">
                       <button
                         type="button"
-                        onClick={() => {
-                          console.log('Add article clicked');
-                        }}
+                        onClick={onAddArticle}
                         className="btn-primary inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                       >
                         <svg className="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,6 +140,7 @@ const ArticleTable: React.FC<ArticleTableProps> = ({
                   onView={onView}
                   onEdit={onEdit}
                   onDelete={onDelete}
+                  showStatus={showStatus}
                 />
               ))
             )}

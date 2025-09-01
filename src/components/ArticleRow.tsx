@@ -9,6 +9,7 @@ interface ArticleRowProps {
   onView: (article: Article) => void
   onEdit: (article: Article) => void
   onDelete: (id: number) => void
+  showStatus?: boolean
 }
 
 interface ActionIconProps {
@@ -35,7 +36,8 @@ const ArticleRow: React.FC<ArticleRowProps> = ({
   canEdit,
   onView,
   onEdit,
-  onDelete
+  onDelete,
+  showStatus = true
 }) => {
   // Common class names
   const cellBaseClass = "px-6 py-4 align-top"
@@ -69,11 +71,13 @@ const ArticleRow: React.FC<ArticleRowProps> = ({
         </div>
       </td>
       
-      <td className={cellBaseClass}>
-        <span className={getStatusBadgeClass(article.status)}>
-          {article.status}
-        </span>
-      </td>
+      {showStatus && (
+        <td className={cellBaseClass}>
+          <span className={getStatusBadgeClass(article.status)}>
+            {article.status}
+          </span>
+        </td>
+      )}
       
       <td className={`${cellBaseClass} ${textSecondaryClass} whitespace-nowrap`}>
         {article.author}

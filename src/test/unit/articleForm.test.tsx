@@ -79,12 +79,10 @@ describe('ArticleForm', () => {
     renderForm({
       formErrors: {
         title: 'Title Required',
-        author: 'Author Missing',
         content: 'Content Empty'
       }
     })
     expect(screen.getByText('Title Required')).toBeInTheDocument()
-    expect(screen.getByText('Author Missing')).toBeInTheDocument()
     expect(screen.getByText('Content Empty')).toBeInTheDocument()
   })
 
@@ -138,11 +136,18 @@ describe('ArticleForm', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it('shows validation error for invalid author name', async () => {
-    renderForm();
+  it('author field is read-only and shows logged-in user name', () => {
+    renderForm({
+      articleForm: {
+        title: '',
+        status: ArticleStatus.DRAFT,
+        author: 'Test Editor',
+        content: '',
+        summary: '',
+      }
+    });
     const authorInput = screen.getByLabelText(/author/i);
-    await userEvent.type(authorInput, '123');
-    await userEvent.click(screen.getByRole('button', { name: /create article/i }));
-    expect(await screen.findByText('Author name can only contain letters and spaces')).toBeInTheDocument();
+    expect(authorInput).toHaveAttribute('readonly');
+    expect(authorInput).toHaveValue('Test Editor');
   });
 });

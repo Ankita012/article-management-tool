@@ -121,16 +121,10 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
       errors.title = 'Title is required';
     }
 
-    if (!articleForm.author.trim()) {
-      errors.author = 'Author is required';
-    } else if (!/^[a-zA-Z\s]*$/.test(articleForm.author)) {
-      errors.author = 'Author name can only contain letters and spaces';
-    }
-
     if (!articleForm.content.trim()) {
       errors.content = 'Content is required';
     }
-    
+
     const isValid = Object.keys(errors).length === 0;
     if (onValidation) {
       onValidation(isValid, errors);
@@ -167,15 +161,21 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
         />
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <FormField
-            label="Author"
-            name="author"
-            value={articleForm.author}
-            onChange={onFormChange}
-            error={formErrors.author}
-            placeholder="Enter author name"
-          />
-          
+          <div>
+            <label htmlFor="author" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Author
+            </label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              value={articleForm.author}
+              readOnly
+              className="w-full rounded-lg border border-gray-300 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 py-3 px-4 cursor-not-allowed"
+              placeholder="Author name"
+            />
+          </div>
+
           <FormField
             label="Status"
             name="status"

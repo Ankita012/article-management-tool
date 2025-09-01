@@ -65,8 +65,23 @@ const Dashboard: React.FC = () => {
     const minimumDisplayTime = new Promise(resolve => setTimeout(resolve, 300)); // 300ms minimum
 
     try {
+      const requestFilters = (() => {
+        if (user?.role === UserRole.VIEWER) {
+          return {
+            ...filters,
+            status: [ArticleStatus.PUBLISHED],
+          } as ArticleFiltersType
+        } else if (user?.role === UserRole.EDITOR) {
+          return {
+            ...filters,
+            author: user?.name || '',
+          } as ArticleFiltersType
+        }
+        return filters
+      })()
+
       const [response] = await Promise.all([
-        getArticles(pagination.page, pagination.pageSize, filters),
+        getArticles(pagination.page, pagination.pageSize, requestFilters),
         minimumDisplayTime
       ]);
       console.log('Fetched articles:', response);
@@ -77,7 +92,7 @@ const Dashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, pagination.pageSize, filters]);
+  }, [pagination.page, pagination.pageSize, filters, user?.role]);
 
   useEffect(() => {
     fetchArticles()
@@ -226,18 +241,20 @@ const Dashboard: React.FC = () => {
 
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
      
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {stats.map(stat => (
-            <StatsCard
-              key={stat.title}
-              title={stat.title}
-              value={stat.value}
-              icon={stat.icon}
-              iconColor={stat.iconColor}
-              iconBgColor={stat.iconBgColor}
-            />
-          ))}
-        </div>
+        {canEdit && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {stats.map(stat => (
+              <StatsCard
+                key={stat.title}
+                title={stat.title}
+                value={stat.value}
+                icon={stat.icon}
+                iconColor={stat.iconColor}
+                iconBgColor={stat.iconBgColor}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Controls Bar */}
         <div className="card p-6 mb-6">
@@ -262,6 +279,8 @@ const Dashboard: React.FC = () => {
             onView={openViewModal}
             onEdit={openEditModal}
             onDelete={handleDeleteArticle}
+            showStatus={canEdit}
+            onAddArticle={openAddModal}
           />
         </div>
 
