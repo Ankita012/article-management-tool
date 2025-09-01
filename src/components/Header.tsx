@@ -13,9 +13,9 @@ const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center space-x-4">
-            <a href="#" aria-label="BidOne home" className="inline-flex items-center">
+            <a href="#" aria-label="ArticleOne home" className="inline-flex items-center">
               <span className="text-2xl font-extrabold tracking-tight">
-                <span className="text-black dark:text-white">Bid</span>
+                <span className="text-black dark:text-white">Article</span>
                 <span className="text-primary-500 dark:text-primary-300">One</span>
               </span>
             </a>

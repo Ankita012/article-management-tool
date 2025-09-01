@@ -10,7 +10,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary palette updated to match BidOne logo cyan/turquoise
         primary: {
           50: '#f0fbff',
           100: '#e0f7ff',

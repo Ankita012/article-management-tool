@@ -28,7 +28,7 @@ const LoginForm: React.FC = () => {
       <div className="max-w-md w-full space-y-8 fade-in-up">
         <div className="text-center">
           <div className="mx-auto inline-flex items-center justify-center">
-            <a href="#" aria-label="BidOne home" className="inline-flex items-center">
+            <a href="#" aria-label="ArticleOne home" className="inline-flex items-center">
               <span className="text-4xl sm:text-5xl font-extrabold tracking-tight">
                 <span className="text-black dark:text-white">Bid</span>
                 <span className="text-primary-500 dark:text-primary-300">One</span>
