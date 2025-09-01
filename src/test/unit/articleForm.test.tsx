@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ArticleForm from '../components/ArticleForm';
-import { ArticleStatus } from '../types';
+import ArticleForm from '../../components/ArticleForm';
+import { ArticleStatus } from '../../types';
 import { useState } from 'react';
 
 // Helper to render form with base props

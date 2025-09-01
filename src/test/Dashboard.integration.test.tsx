@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import Dashboard from '../pages/Dashboard'
 import { ThemeProvider } from '../contexts/ThemeContext'
 import { AuthProvider } from '../contexts/AuthContext'
+import { ToastProvider } from '../contexts/ToastContext'
 import * as articleService from '../services/articleService'
 import { ArticleStatus, UserRole } from '../types'
 import { vi, afterEach, beforeEach } from 'vitest'
@@ -39,7 +40,9 @@ function renderDashboard() {
   return render(
     <ThemeProvider>
       <AuthProvider>
-        <Dashboard />
+        <ToastProvider>
+          <Dashboard />
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   )
@@ -176,14 +179,57 @@ describe('Dashboard (Integration)', () => {
 
     const nextButton = screen.getByRole('button', { name: /next/i });
     await userEvent.click(nextButton);
-
-    // Wait for the loading spinner to appear and then disappear, ensuring the next page has loaded
-    // Assuming there's a visual loading indicator or a change in content
-    // For simplicity, we'll wait for the new article title to appear
     expect(await screen.findByText('Eleventh Article')).toBeInTheDocument();
 
-    // Verify that getArticles was called exactly once for the next page fetch
     expect(vi.mocked(articleService.getArticles)).toHaveBeenCalledTimes(1);
     expect(vi.mocked(articleService.getArticles)).toHaveBeenCalledWith(2, 10, expect.any(Object));
   });
 })
+it('shows a success toast after creating an article', async () => {
+  vi.mocked(articleService.createArticle).mockResolvedValue({
+    data: { ...mockArticles[0], id: 99, title: 'Created!' },
+    success: true
+  });
+
+  renderDashboard();
+  const user = userEvent.setup();
+  await screen.findByText('First Article');
+
+  // Open create modal
+  const addBtn = screen.getByText(/add article/i);
+  await user.click(addBtn);
+
+  // Fill and submit
+  await user.type(screen.getByLabelText(/title/i), 'Valid');
+  await user.type(screen.getByLabelText(/author/i), 'Valid');
+  await user.type(screen.getByLabelText(/content/i), 'Valid');
+  await user.type(screen.getByLabelText(/summary/i), 'Valid');
+  await user.click(screen.getByRole('button', { name: /create article/i }));
+
+  // Toast should appear (rendered via portal as role="status")
+  expect(await screen.findByText(/Article successfully created/i)).toBeInTheDocument();
+});
+
+it('shows a red toast after deleting an article', async () => {
+  vi.mocked(articleService.deleteArticle).mockResolvedValue({
+    data: true,
+    success: true
+  });
+
+  renderDashboard();
+  const user = userEvent.setup();
+  await screen.findByText('First Article');
+
+  // Click delete icon on the row for "First Article"
+  const row = screen.getAllByRole('row').find(r => within(r).queryByText('First Article'));
+  if (!row) throw new Error('Row for "First Article" not found');
+  const deleteBtn = within(row).getByLabelText(/delete article/i);
+  await user.click(deleteBtn);
+
+  // Confirm in modal
+  const confirmDelete = screen.getByRole('button', { name: /^delete$/i });
+  await user.click(confirmDelete);
+
+  // Expect destructive toast
+  expect(await screen.findByText(/Article deleted successfully/i)).toBeInTheDocument();
+});

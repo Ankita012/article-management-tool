@@ -3,6 +3,7 @@ import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import LoginForm from './pages/LoginForm'
 import Dashboard from './pages/Dashboard'
+import { ToastProvider } from './contexts/ToastContext'
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth()
@@ -18,7 +19,9 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   )

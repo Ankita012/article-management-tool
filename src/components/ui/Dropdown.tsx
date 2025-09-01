@@ -10,7 +10,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
+  const triggerRef = useRef<HTMLDivElement>(null)
 
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen
   const setIsOpen = onOpenChange || setInternalIsOpen
@@ -57,9 +57,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div className="relative sm:inline-block text-left">
       <div>
-        <button
+        <div
           ref={triggerRef}
-          type="button"
+          role="button"
+          tabIndex={0}
           onClick={toggleDropdown}
           onKeyDown={(e: React.KeyboardEvent) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -72,7 +73,7 @@ const Dropdown: React.FC<DropdownProps> = ({
           aria-haspopup="true"
         >
           {trigger}
-        </button>
+        </div>
       </div>
 
       {isOpen && (

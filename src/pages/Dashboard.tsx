@@ -12,9 +12,11 @@ import ArticleForm from '../components/ArticleForm'
 import StatsCard from '../components/StatsCard'
 import Pagination from '../components/Pagination'
 import Header from '../components/Header'
+import { useToast } from '../contexts/ToastContext'
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth()
+  const toast = useToast()
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -38,7 +40,6 @@ const Dashboard: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   
-  const [successMessage, setSuccessMessage] = useState('');
   
   // Confirmation modal state
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -184,8 +185,7 @@ const Dashboard: React.FC = () => {
       }
 
       closeModals()
-      setSuccessMessage(`Article successfully ${editingArticle ? 'updated' : 'created'}!`);
-      setTimeout(() => setSuccessMessage(''), 3000);
+      toast.success(`Article successfully ${editingArticle ? 'updated' : 'created'}!`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save article')
     } finally {
@@ -203,6 +203,7 @@ const Dashboard: React.FC = () => {
           if (articles.length === 1 && pagination.page > 1) {
             setPagination(prev => ({ ...prev, page: prev.page - 1 }))
           }
+          toast.error('Article deleted successfully')
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Failed to delete article')
         }
@@ -224,12 +225,6 @@ const Dashboard: React.FC = () => {
       <Header />
 
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {successMessage && (
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-md" role="alert">
-            <p className="font-bold">Success</p>
-            <p>{successMessage}</p>
-          </div>
-        )}
      
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {stats.map(stat => (
